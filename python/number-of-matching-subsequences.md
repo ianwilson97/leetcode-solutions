@@ -140,3 +140,48 @@ def numMatchingSubseq(s, words):
 - **Time Complexity:** O(n + w * log n), where `n` is the length of `s` and `w` is the total number of words.
 - **Space Complexity:** O(n), for the character-to-indices mapping of `s`.
 
+# Approach 4
+### **Intuition**
+  When we first look at this problem, we need to understand what makes a string a subsequence of another. A subsequence is formed by taking characters from the original string while keeping their relative order, but they don't need to be consecutive. For example, "ace" is a subsequence of "abcde" because we can find 'a', 'c', and 'e' in order, even though they're not adjacent.
+
+The natural first thought is to check each word against the main string by trying to find each character in order. We want to ensure that after finding each character, we only look forward in the main string for the next character, never backward, to maintain the proper sequence.
+
+### **Approach**  
+The solution implements an elegant way to check for subsequences using Python's built-in string methods. Here's how it works:
+
+1.  The main function  `numMatchingSubseq`  takes two parameters:
+    -   `s`: The source string to check against
+    -   `words`: A list of words to check if they are subsequences
+2.  The nested helper function  `isSubsequence`  does the heavy lifting:
+    -   It maintains a  `current_position`  pointer that starts at -1
+    -   For each character in the word we're checking:
+        -   We use  `s.find(char, current_position + 1)`  to look for the next occurrence of the character
+        -   The second parameter in  `find()`  tells it to start searching from  `current_position + 1`, ensuring we only move forward
+        -   If we can't find the character (`current_position == -1`), the word is not a subsequence
+    -   If we successfully find all characters in order, the word is a subsequence
+3.  The main function then:
+    -   Initializes a counter for matching words
+    -   Checks each word using  `isSubsequence`
+    -   Increments the counter for each matching word
+    -   Returns the final count
+```
+class Solution:
+    def numMatchingSubseq(self, s: str, words: List[str]) -> int:
+        def isSubsequence(word: str) -> bool:
+            current_position = -1
+            for char in word:
+                current_position = s.find(char, current_position + 1)
+                if current_position == -1:
+                    return False
+            return True
+
+        matching_words = 0
+        for word in words:
+            if isSubsequence(word):
+                matching_words += 1
+        return matching_words
+```
+### **Complexity**
+
+-   Time complexity: $$O(k * n)$$ Where k is the total length of all words combined, and n is the length of the source string s. For each character in each word, we might need to scan through a portion of the source string.
+-   Space complexity: $$O(1)$$ We only use a constant amount of extra space regardless of input size. The  `current_position`  variable and loop counters are the only extra space needed, and they don't grow with input size.

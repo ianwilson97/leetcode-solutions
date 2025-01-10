@@ -140,7 +140,7 @@ def numMatchingSubseq(s, words):
 - **Time Complexity:** O(n + w * log n), where `n` is the length of `s` and `w` is the total number of words.
 - **Space Complexity:** O(n), for the character-to-indices mapping of `s`.
 
-## Approach 4
+## Approach 4: Iterative String Pattern Matching
 ### **Intuition**
   When we first look at this problem, we need to understand what makes a string a subsequence of another. A subsequence is formed by taking characters from the original string while keeping their relative order, but they don't need to be consecutive. For example, "ace" is a subsequence of "abcde" because we can find 'a', 'c', and 'e' in order, even though they're not adjacent.
 

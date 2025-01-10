@@ -3,7 +3,7 @@
 ## Approaches:
 1. [Horizontal Scanning](#horizontal-scanning)
 2. [Vertical Scanning](#vertical-scanning)
-3. [Divie and Conquer](#divide-and-conquer)
+3. [Divide and Conquer](#divide-and-conquer)
 4. [Binary Search](#binary-search)
 5. [Simplified Horizontal Scanning](#simplified-horizontal-scanning)
    

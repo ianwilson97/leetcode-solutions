@@ -5,7 +5,7 @@
 2. [Vertical Scanning](#vertical-scanning)
 3. [Divie and Conquer](#divide-and-conquer)
 4. [Binary Search](#binary-search)
-5. [Simplified Horizontal Scanning] (#simplified-horizontal-scanning)
+5. [Simplified Horizontal Scanning](#simplified-horizontal-scanning)
    
 ### Approach 1: Horizontal Scanning
 

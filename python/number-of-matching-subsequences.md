@@ -4,7 +4,7 @@
 1. [Brute Force With Two Pointers](#approach-1-brute-force-with-two-pointers)
 2. [Frequency with Maps](#approach-2-frequency-with-maps)
 3. [Indexed Characters with Binary Search (Optimal)](#approach-3-indexed-characters-with-binary-search-optimal)
-
+4. [Iterative String Pattern Matching](#approach-4-iterative-string-pattern-matching)
 ---
 
 ## Approach 1: Brute Force With Two Pointers
@@ -164,7 +164,7 @@ The solution implements an elegant way to check for subsequences using Python's 
     -   Checks each word using  `isSubsequence`
     -   Increments the counter for each matching word
     -   Returns the final count
-```
+```python
 class Solution:
     def numMatchingSubseq(self, s: str, words: List[str]) -> int:
         def isSubsequence(word: str) -> bool:

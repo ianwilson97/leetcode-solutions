@@ -3,6 +3,7 @@
 ## Approaches:
 - [Basic Approach: Random Selection](#random-selection)
 - [Optimal Approach: Minimax with Minimax-Solution](#minimax)
+- [Simple Approach: Similarity-Based Elimination](#elimination)
 
 ## Basic Approach: Random Selection
 
@@ -88,3 +89,59 @@ def optimal_guess(wordlist, guess):
 
 This approach ensures we minimize our chances of making an incorrect guess and quickly narrows down the list of potential secret words.
 
+## Simple Approach: Similarity-Based Elimination
+
+### Intuition
+
+Imagine playing a game like Wordle where you need to guess a secret word, but instead of getting letter-by-letter feedback, you only get told how many letters are correct in their exact positions. The key insight is that if we make a guess and get told "2 letters are correct," then the secret word MUST share exactly 2 letters in the same positions with our guess – no more, no less. We can use this to narrow down possibilities.
+
+Another crucial insight is that in a large list of words, when we make a random guess, we're more likely to get 0 matches than any other number. So, we want to make guesses that are "typical" or "representative" of the word list, which will help us eliminate more words when we get 0 matches.
+
+### Approach
+
+Our strategy works like a game of 20 questions, but played very strategically:
+
+1.  First, we analyze how common each letter is at each position across all words. For example, if many words have 'a' as their first letter, we consider 'a' "heavy" in the first position. We do this using a Counter for each position (0-5) in the words.
+2.  For each word, we calculate its "similarity score" to the rest of the list by adding up the weights of its letters in each position. A higher score means this word shares more common patterns with other words.
+3.  We sort words by this similarity score, putting the most "typical" words at the end of our list. We'll use these typical words as our guesses because:
+    -   If they get 0 matches (common case), we can eliminate many similar words
+    -   If they get some matches (rare case), we have a good reference point for finding the answer
+4.  For each guess:
+    -   Take the most typical remaining word
+    -   Get the number of matching positions from master.guess()
+    -   Keep only words that have exactly that many matches with our guess
+    -   Repeat until we find the answer
+
+```python
+# """
+# This is Master's API interface.
+# You should not implement it, or speculate about its implementation
+# """
+# class Master:
+#     def guess(self, word: str) -> int:
+
+class Solution:
+    def findSecretWord(self, words: List[str], master: 'Master') -> None:
+        weights = [Counter(word[i] for word in words) for i in range(6)]
+
+        words.sort(key=lambda word: sum(weights[i][c] for i, c in enumerate(word)))
+
+        while words:
+            word = words.pop()
+            matches = master.guess(word)
+
+            words = [
+                other
+                for other in words
+                if matches == sum(w == o for w, o in zip(word, other))
+            ]
+```
+
+### Complexity
+
+-   Time complexity:  `O(n²)`  where n is the number of words
+    -   For each guess (up to n times), we might need to check every remaining word
+    -   Each word comparison is O(1) since words are fixed length (6)
+-   Space complexity:  `O(1)`
+    -   The weights list is constant size (6 positions)
+    -   We modify the input words list in-place for filtering

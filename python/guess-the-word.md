@@ -2,9 +2,9 @@
 
 ## Approaches:
 - [Basic Approach: Random Selection](#random-selection)
-- [Optimal Approach: Minimax with Minimax-Solution](#minimax)
+- [Minimax with Minimax-Solution](#minimax)
 - [Simple Approach: Similarity-Based Elimination](#elimination)
-
+- [Optimal Approach: Random Sampling with Match-Based Filtering](#filtering)
 ## Basic Approach: Random Selection
 
 ### Intuition
@@ -159,3 +159,73 @@ class Solution:
 -   Space complexity:  `O(1)`
     -   The weights list is constant size (6 positions)
     -   We modify the input words list in-place for filtering
+
+## Optimal Approach: Random Sampling with Match-Based Filtering
+
+### Intuition
+
+Think about playing a word guessing game where your friend only tells you the number of letters that match exactly with their secret word. If you guess "PLEASE" and they say "1 match", that's powerful information – you know their word must have exactly one letter in the same position as "PLEASE". Each guess lets you narrow down possibilities based on this matching pattern, similar to how each question in "20 Questions" helps eliminate options.
+
+### Approach
+
+The algorithm works through progressive elimination using random sampling and match information. Here's how it works in plain English:
+
+1.  Start with a complete list of possible secret words.
+2.  Until we find the secret word (get 6 matches):
+    -   Pick one word randomly from our remaining list of possibilities
+    -   Ask how many letters match exactly with the secret word
+    -   If it's not the secret word (less than 6 matches):
+        -   Look at every remaining word in our list
+        -   Keep only words that match our guess in exactly the same number of positions
+        -   Replace our old list with this filtered list
+    -   If it is the secret word (6 matches), we're done!
+
+For example, let's say we have words like "PLEASE", "PYTHON", "PALACE", and "PENCIL":
+
+-   We randomly pick "PLEASE" and get told "1 match"
+-   We check each remaining word against "PLEASE":
+    -   "PYTHON" has 1 match ('P'), so we keep it
+    -   "PALACE" has 3 matches ('P', 'L', 'E'), so we remove it
+    -   "PENCIL" has 1 match ('P'), so we keep it
+-   Our new list only contains "PYTHON" and "PENCIL"
+-   We continue this process until we find the word
+
+```python
+class Solution:
+    def compare(self, word1: str, word2: str) -> int:
+        """Count matching characters at same positions between two words."""
+        return sum(int(word1[i] == word2[i]) for i in range(6))
+
+    def findSecretWord(self, words: List[str], master: 'Master') -> None:
+        # Track how many positions match with secret word
+        matching_positions = 0
+        filtered_words = []
+        current_guess = ""
+        
+        while matching_positions < 6:
+            # Make a random guess from remaining words
+            current_guess = random.choice(words)
+            matching_positions = master.guess(current_guess)
+            
+            if matching_positions < 6:
+                # Keep only words with same number of matches
+                for word in words:
+                    if self.compare(word, current_guess) == matching_positions:
+                        filtered_words.append(word)
+                
+                # Update our word list with filtered results
+                words.clear()
+                words, filtered_words = filtered_words, words
+                
+        return current_guess
+```
+
+### Complexity
+
+-   Time complexity:  `O(n²)`  where n is the number of words
+    -   We might need up to n guesses in the worst case
+    -   For each guess, we compare against up to n remaining words
+    -   Each comparison takes constant time (6 characters)
+-   Space complexity:  `O(n)`
+    -   We need space for our filtered list of words
+    -   This list never grows larger than our initial word list

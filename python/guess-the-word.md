@@ -122,18 +122,32 @@ Our strategy works like a game of 20 questions, but played very strategically:
 
 class Solution:
     def findSecretWord(self, words: List[str], master: 'Master') -> None:
-        weights = [Counter(word[i] for word in words) for i in range(6)]
-
-        words.sort(key=lambda word: sum(weights[i][c] for i, c in enumerate(word)))
-
+        # Calculate letter frequencies for each position in the word
+        letter_frequencies = [Counter(word[position] for word in words) 
+                            for position in range(6)]
+        
+        # Sort words by their similarity score (sum of letter frequencies)
+        words.sort(key=lambda current_word: sum(
+            letter_frequencies[position][letter] 
+            for position, letter in enumerate(current_word))
+        )
+        
+        # Continue guessing until we find the secret word or run out of words
         while words:
-            word = words.pop()
-            matches = master.guess(word)
-
+            # Pick the most representative word from our remaining list
+            candidate_word = words.pop()
+            
+            # Get number of matching positions from the Master API
+            matching_positions = master.guess(candidate_word)
+            
+            # Filter word list to only keep words with exact same number of matches
             words = [
-                other
-                for other in words
-                if matches == sum(w == o for w, o in zip(word, other))
+                remaining_word
+                for remaining_word in words
+                if matching_positions == sum(
+                    word_char == other_char 
+                    for word_char, other_char in zip(candidate_word, remaining_word)
+                )
             ]
 ```
 

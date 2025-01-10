@@ -5,7 +5,8 @@
 2. [Vertical Scanning](#vertical-scanning)
 3. [Divie and Conquer](#divide-and-conquer)
 4. [Binary Search](#binary-search)
-
+5. [Simplified Horizontal Scanning] (#simplified-horizontal-scanning)
+   
 ### Approach 1: Horizontal Scanning
 
 The idea behind horizontal scanning is to look at the prefix common to the first two strings and then continue with this "common prefix" and the next string, and so on.
@@ -150,3 +151,44 @@ def longestCommonPrefix_binary_search(strs):
 - **Time Complexity**: O(S * log(minLen)), where S is the sum of all characters in all strings and minLen is the length of the shortest string in strs.
 - **Space Complexity**: O(1) as no additional space is used.
 
+## Approach 5: Simplified Horizontal Scanning
+
+### Intuition
+
+Think about how you find a common prefix between words manually - you'd take one word and check if its beginning matches other words. As you find differences, you shorten what you're looking for. Just like comparing the start of words "flower" and "flight" - you'd quickly realize only "fl" matches at the beginning.
+
+### Approach
+
+We treat the first string as our initial guess for the common prefix. Then, we check this prefix against each remaining string, shortening it when needed until it matches at the start of the current string. If we ever run out of prefix to match, we know there's no common part at the start.
+
+In plain English:
+
+1.  Take the first string as your starting prefix
+2.  For each remaining string:
+    -   While this string doesn't start with our current prefix
+    -   Keep removing the last letter of the prefix
+    -   If we remove everything, there's no common prefix
+3.  Whatever prefix remains at the end is our answer
+
+```python
+class Solution:
+    def longestCommonPrefix(self, strs: List[str]) -> str:
+        if not strs:
+            return ""
+        
+        prefix = strs[0]
+
+        for string in range(1, len(strs)):
+            while strs[string].find(prefix) != 0:
+                prefix = prefix[:-1]
+                if not prefix:
+                    return ""
+        
+        return prefix
+```
+
+
+### Complexity
+
+-   Time complexity:  `O(S)`  where S is the sum of all characters in all strings
+-   Space complexity:  `O(1)`  since we only modify the prefix string

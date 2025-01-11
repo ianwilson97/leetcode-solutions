@@ -3,6 +3,7 @@
 ## Approaches
 1. [Two-Pointer Approach with String Builder](#approach-1)
 2. [Optimized Two-Pointer Approach (Without Extra Space)](#approach-2)
+3. [Single Pass String Cleaning](#approach-3)
 
 ## Approach 1: Two-Pointer Approach with String Builder
 
@@ -94,3 +95,29 @@ def isPalindrome(s: str) -> bool:
 ### Space Complexity
 - O(1): No additional space is used besides a few variables.
 
+## Single-Pass String Cleaning
+
+### Intuition
+
+When thinking about palindromes, we need to focus only on the actual letters and numbers in the string, ignoring spaces, punctuation, and case sensitivity. My first thought was that we need to "clean" the string before checking if it reads the same forwards and backwards. Think of how "A man, a plan, a canal: Panama" is a palindrome - we need to transform it to "amanaplanacanalpanama" before we can properly check.
+
+### Approach
+
+Let's break this down into a clear step-by-step process:
+
+1.  First, we convert the entire string to lowercase using  `s.lower()`. This ensures that cases don't affect our comparison - for example, "A" and "a" should be considered the same character.
+2.  Next, we filter out all non-alphanumeric characters using Python's built-in  `filter()`  function with  `str.isalnum`. This removes spaces, punctuation, and any other special characters. The  `isalnum()`  method returns True only for letters and numbers.
+3.  We join the filtered characters back into a single string using  `"".join()`. At this point, our string contains only lowercase letters and numbers.
+4.  Finally, we compare this cleaned string with its reverse. In Python,  `s[::-1]`  creates a reversed copy of the string using slice notation. If the string equals its reverse, it's a palindrome.
+
+```python
+class Solution:
+    def isPalindrome(self, s: str) -> bool:
+        s = "".join(filter(str.isalnum, s.lower()))
+        return s == s[::-1]
+```
+
+### Complexity
+
+-   Time complexity: $$O(n)$$ The solution needs to process each character in the input string once during the lowercase conversion, once during filtering, and once during the reverse comparison. While we perform multiple passes, this still results in linear time complexity.
+-   Space complexity: $$O(n)$$ We create a new string containing the filtered characters. In the worst case (when all characters are alphanumeric), this will be the same length as the input string. The reversed string also takes up additional space, though Python's slice operations are optimized to minimize memory usage.

@@ -4,6 +4,7 @@
 - [Approach 1: Brute Force](#approach-1-brute-force)
 - [Approach 2: Using Extra Array](#approach-2-using-extra-array)
 - [Approach 3: Reverse Array](#approach-3-reverse-array)
+- [Approach 4: Two-Point Slice Swap](#approach-4-slice-swap)
 
 ## Approach 1: Brute Force
 
@@ -95,3 +96,45 @@ def rotate(nums, k):
 
 Each approach improves efficiency from the one before, with the third approach being optimal for both time and space.
 
+## Approach 4: Two-Point Python Slice Swap
+
+### Intuition
+
+When rotating an array by k positions to the right, we're essentially splitting the array into two parts and swapping their positions. The last k elements move to the front, while the remaining elements shift to the end.
+
+### Approach
+
+1.  First, we handle edge cases:
+    -   If k is larger than array length, we only need to rotate by k % len(nums)
+    -   If array has 0-1 elements or k = 0, no rotation needed
+2.  The main logic uses Python's slice assignment feature:
+    -   `nums[-k:]`  takes the last k elements
+    -   `nums[:-k]`  takes all elements except the last k
+    -   We assign these slices to  `nums[:k]`  (first k positions) and  `nums[k:]`  (remaining positions) respectively
+
+For example, with nums = [1,2,3,4,5] and k = 2:
+
+-   `nums[-k:]`  is [4,5]
+-   `nums[:-k]`  is [1,2,3]
+-   After assignment: [4,5,1,2,3]
+
+```python
+class Solution:
+    def rotate(self, nums: List[int], k: int) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        k = k % len(nums)
+
+        if len(nums) <= 1 or k == 0:
+            return
+
+        nums[:k], nums[k:] = nums[-k:], nums[:-k]
+```
+
+### Complexity
+
+-   Time complexity: $$O(n)$$
+    -   Creating slices and copying elements requires traversing the array once
+-   Space complexity: $$O(1)$$
+    -   While Python's slice assignment creates temporary lists internally, the problem considers this as constant space since we're using language features rather than explicitly creating additional data structures

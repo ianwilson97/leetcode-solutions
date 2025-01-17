@@ -5,7 +5,7 @@
 - [Approach 1: Brute-force Checking](#approach-1-brute-force-checking)
 - [Approach 2: Sorting and HashMap](#approach-2-sorting-and-hashmap)
 - [Approach 3: Efficient Sliding Window with HashMap](#approach-3-efficient-sliding-window-with-hashmap)
-
+- [Approach 4: Simplified Sliding Window with Counter](#approach-4-sliding-window-with-counter)
 ---
 
 ## Approach 1: Brute-force Checking
@@ -129,3 +129,63 @@ findAnagrams("cbaebabacd", "abc")
 ### Space Complexity
 - O(1), as the space used by the Counter is constant relative to the fixed character set (assuming only lowercase letters).
 
+## Approach 4: Sliding Window with Counter
+### Intuition
+
+When looking for anagrams in a text, we need to compare character frequencies. Since we're looking for all possible positions, using a sliding window approach that maintains and updates character counts feels natural - this way we don't have to recount characters for each possible position.
+
+### Approach
+
+1.  First validate the inputs - if either string is empty or the text is shorter than pattern, return empty list
+2.  Create a frequency counter for the pattern we're looking for
+3.  Create initial window of pattern length at start of text and count its characters
+4.  Compare first window with pattern - if they match, we found our first anagram
+5.  For rest of text, slide window one character at a time:
+    -   Add new character on right to window count
+    -   Remove leftmost character from window count
+    -   If character count becomes zero, remove it completely
+    -   Compare current window with pattern
+    -   If frequencies match, add starting position to results
+6.  Return all positions where anagrams were found
+
+### Code
+```python
+from collections import Counter
+
+def find_anagrams(text: str, pattern: str) -> list:
+    """Find starting indices of pattern's anagrams in text."""
+    if not text or not pattern or len(text) < len(pattern):
+        return []
+    
+    result = []
+    pattern_count = Counter(pattern)
+    window_count = Counter(text[:len(pattern)])
+    
+    # Check first window
+    if window_count == pattern_count:
+        result.append(0)
+        
+    # Slide window: remove left char, add right char, check if anagram
+    for i in range(len(pattern), len(text)):
+        window_count[text[i]] += 1
+        window_count[text[i - len(pattern)]] -= 1
+        
+        # Clean up zero counts
+        if window_count[text[i - len(pattern)]] == 0:
+            del window_count[text[i - len(pattern)]]
+            
+        if window_count == pattern_count:
+            result.append(i - len(pattern) + 1)
+            
+    return result
+```
+
+### Complexity
+
+-   Time complexity: $$O(n)$$ where n is length of input text
+    -   We scan text once with constant time operations at each step
+    -   Counter comparisons are O(k) where k is alphabet size (constant)
+-   Space complexity: $$O(k)$$ where k is size of alphabet
+    -   We store two frequency counters
+    -   Each counter has at most k entries (one per unique character)
+    -   k is limited by alphabet size, so effectively O(1)

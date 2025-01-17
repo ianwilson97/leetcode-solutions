@@ -3,7 +3,7 @@
 ## Table of Contents
 1. [Approach 1: Generate All Permutations (Brute Force)](#approach-1-generate-all-permutations-brute-force)
 2. [Approach 2: Sliding Window with Character Count Comparison](#approach-2-sliding-window-with-character-count-comparison)
-
+3. [Approach 3: Simplified Sliding Window with Counter](#approach-3-simplified-sliding-window-with-counter)
 ---
 
 ## Approach 1: Generate All Permutations (Brute Force)
@@ -95,3 +95,67 @@ print(checkInclusion(s1, s2))  # Output: True
 - **Time Complexity**: \(O(l + m)\), where \(l\) is the length of `s1`, and \(m\) is the length of `s2`. Iterating once through `s2` and performing constant-time operations for each character.
 - **Space Complexity**: \(O(1)\), the space needed for the frequency arrays is constant.
 
+## Approach 3: Simplified Sliding Window with Counter
+### Intuition
+
+This problem asks to find if a string contains a permutation of another string. The key insight is that permutations have identical character frequencies, and we can use a sliding window to efficiently check each possible substring without recounting characters each time.
+
+### Approach
+
+1.  First check if s1 is longer than s2 - if so, no permutation can exist
+2.  Create character frequency maps:
+    -   Count characters in pattern string (s1)
+    -   Count characters in first window of s2
+3.  Check if first window matches pattern
+4.  Slide window through remaining text:
+    -   Add new character on right
+    -   Remove leftmost character
+    -   Remove character from count if frequency becomes zero
+    -   Compare window with pattern
+5.  Return true if any window matches, false if none match
+
+### Code
+```python
+from collections import Counter
+
+def check_inclusion(s1: str, s2: str) -> bool:
+    """
+    Check if s2 contains a permutation of s1.
+    """
+    # Edge case: s1 longer than s2
+    if len(s1) > len(s2):
+        return False
+        
+    # Initialize frequency counters
+    pattern_count = Counter(s1)
+    window_count = Counter(s2[:len(s1)])
+    
+    # Check first window
+    if pattern_count == window_count:
+        return True
+    
+    # Slide window through remaining string
+    for i in range(len(s1), len(s2)):
+        # Update window counts
+        window_count[s2[i]] += 1
+        window_count[s2[i - len(s1)]] -= 1
+        
+        # Remove zero counts
+        if window_count[s2[i - len(s1)]] == 0:
+            del window_count[s2[i - len(s1)]]
+            
+        # Check for permutation
+        if pattern_count == window_count:
+            return True
+            
+    return False
+```
+
+### Complexity
+
+-   Time complexity: $$O(n)$$ where n is length of s2
+    -   Single pass through s2
+    -   Counter comparisons are O(1) since limited by alphabet size
+-   Space complexity: $$O(1)$$
+    -   Two Counter objects storing at most 26 characters each (lowercase English letters)
+    -   Fixed size regardless of input length

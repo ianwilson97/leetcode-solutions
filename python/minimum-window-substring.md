@@ -67,45 +67,55 @@ The sliding window approach is a more optimal solution. The idea is to use two p
 
 ### Code
 ```python
-from collections import Counter
+class Solution:
+    def minWindow(self, s: str, t: str) -> str:
+        # Handle edge cases
+        if not s or not t:
+            return ""
+        
+        # Create variables for counting
+        t_count = Counter(t)
+        current_count = {}
+        required = len(t_count)
+        formed = 0
 
-def minWindow(s: str, t: str) -> str:
-    if not t or not s:
-        return ""
-    
-    t_count = Counter(t)
-    current_count = {}
-    required = len(t_count)
-    formed = 0
-    
-    left, right = 0, 0
-    min_length = float('inf')
-    min_window = (0, 0)
-    
-    while right < len(s):
-        char = s[right]
-        current_count[char] = current_count.get(char, 0) + 1
+        # Create variables for sliding window
+        left = right = 0
+        minimum_length = float('inf')
+        minimum_window = (0,0)
 
-        if char in t_count and current_count[char] == t_count[char]:
-            formed += 1
+        # Main loop for sliding window
+        while right < len(s):
+            # 1. Extract the char and update current_count
+            char = s[right]
+            current_count[char] = current_count.get(char, 0) + 1
 
-        while left <= right and formed == required:
-            if right - left + 1 < min_length:
-                min_length = right - left + 1
-                min_window = (left, right)
+            # Update if valid is formed
+            if char in t_count and current_count[char] == t_count[char]:
+                formed += 1
             
-            # Try to contract the window
-            char = s[left]
-            current_count[char] -= 1
-            if char in t_count and current_count[char] < t_count[char]:
-                formed -= 1
-            
-            left += 1
+            # 2. Reduce the size of window if still valid
+            while left <= right and formed == required:
+                # Update minimum_length and minimum_window
+                current_length = right - left + 1
+                if current_length < minimum_length:
+                    minimum_length = current_length
+                    minimum_window = (left,right)
+                
+                # Extract the leftmost char from current_count
+                char = s[left]
+                current_count[char] -= 1
 
-        right += 1
-    
-    l, r = min_window
-    return s[l:r+1] if min_length != float('inf') else ""
+                # Check if removing char invalidates window
+                if char in t_count and current_count[char] < t_count[char]:
+                    formed -= 1
+                
+                left += 1
+            right += 1
+        
+        # Extract the minimum window substring
+        start, end = minimum_window
+        return s[start:end + 1] if minimum_length != float('inf') else ""
 ```
 
 ### Complexity

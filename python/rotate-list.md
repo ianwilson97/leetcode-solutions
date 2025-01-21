@@ -3,7 +3,7 @@
 ## Approaches
 - [Approach 1: Simulation](#approach-1-simulation)
 - [Approach 2: Making the List Circular](#approach-2-making-the-list-circular)
-
+- [Approach 3: Two Pointer with Dummy Node Rotation](#approach-3-two-pointer-with-dummy)
 ## Approach 1: Simulation
 
 **Intuition**:  
@@ -107,3 +107,79 @@ def rotateRight(head: ListNode, k: int) -> ListNode:
 **Time Complexity**: O(N), where N is the length of the list.  
 **Space Complexity**: O(1), as we manipulate the list in-place without extra data structures.
 
+## Two Pointer with Dummy Node Rotation Solution
+
+### Intuition
+
+When approaching a linked list rotation problem, we can visualize it as reconnecting the last k nodes to the beginning of the list while maintaining the relative order of elements. The dummy node pattern helps handle edge cases elegantly, while two pointers allow us to track the necessary positions for rotation.
+
+### Approach
+
+The solution employs a systematic strategy:
+
+1.  First, we handle base cases for empty lists and single-node lists, as these require no rotation.
+2.  We then calculate the list size for two important reasons:
+    -   To handle cases where k is larger than the list length
+    -   To normalize k through modulo operation, avoiding unnecessary rotations
+3.  The main rotation mechanism uses two pointers:
+    -   The first pointer advances to the end of the list
+    -   The second pointer stops at the node before where we need to break the list
+    -   We maintain a dummy node to simplify head modifications
+4.  For each rotation:
+    -   We connect the last node (first pointer) to the original head
+    -   Update the dummy's next pointer to the new head
+    -   Set the new end node's next pointer to null
+    -   Reset pointers for the next rotation
+
+```python
+def rotateRight(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+    # Base cases
+    if not head or not head.next:
+        return head
+    
+    # Calculate size and normalize k
+    dummy = ListNode(0, head)
+    current = dummy.next
+    size = 0
+    while current:
+        current = current.next
+        size += 1
+    
+    k %= size
+    
+    # Perform rotations
+    first, second = dummy.next, dummy
+    rotations = 0
+    
+    while rotations < k:
+        # Position pointers
+        while first.next:
+            first = first.next
+            second = second.next
+            
+        # Execute rotation
+        first.next = dummy.next
+        dummy.next = first
+        second.next = None
+        
+        # Reset for next rotation
+        second = dummy
+        first = dummy.next
+        rotations += 1
+    
+    return dummy.next
+```
+## Complexity
+
+Time complexity: O(k × n)
+
+-   We traverse the list once to calculate size: O(n)
+-   For each rotation, we traverse the list once: O(n)
+-   We perform k rotations (after normalization)
+-   Therefore, total complexity is O(n + k × n) = O(k × n)
+
+Space complexity: O(1)
+
+-   We only use a constant amount of extra space regardless of input size
+-   The dummy node and pointers are the only additional space required
+-   No recursive calls or data structures that grow with input size

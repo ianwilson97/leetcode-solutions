@@ -94,3 +94,48 @@ def findMedianSortedArrays(nums1, nums2):
 
 This optimal solution efficiently finds the median without merging, using the properties of arrays and partitions.
 
+### Optimal Binary Search
+```python
+class Solution:
+    def find_median_sorted_arrays(self, nums1, nums2):
+        """
+        Find the median of two sorted arrays using binary search.
+        
+        Args:
+            nums1 (List[int]): First sorted array
+            nums2 (List[int]): Second sorted array
+            
+        Returns:
+            float: Median value of the combined sorted arrays
+        """
+        # Make nums1 the smaller array for efficiency
+        if len(nums1) > len(nums2):
+            return self.find_median_sorted_arrays(nums2, nums1)
+        
+        size1, size2 = len(nums1), len(nums2)
+        total_size = size1 + size2
+        partition_size = (total_size + 1) // 2
+        
+        left, right = 0, size1
+        
+        while left <= right:
+            partition1 = (left + right) // 2
+            partition2 = partition_size - partition1
+            
+            # Get partition elements, using sentinel values for edge cases
+            left1 = nums1[partition1 - 1] if partition1 > 0 else float('-inf')
+            left2 = nums2[partition2 - 1] if partition2 > 0 else float('-inf')
+            right1 = nums1[partition1] if partition1 < size1 else float('inf')
+            right2 = nums2[partition2] if partition2 < size2 else float('inf')
+            
+            if left1 <= right2 and left2 <= right1:
+                # Found the correct partition
+                if total_size % 2:
+                    return max(left1, left2)
+                return (max(left1, left2) + min(right1, right2)) / 2
+                
+            if left1 > right2:
+                right = partition1 - 1  # Move partition1 leftward
+            else:
+                left = partition1 + 1   # Move partition1 rightward
+```

@@ -62,7 +62,6 @@ Time Complexity: O(N^2), where N is the number of rows/columns in the matrix.
 Space Complexity: O(1), as the rotations are done in-place.
 
 ```python
-```python
 def rotate_matrix_90_degrees(matrix: list) -> None:
     matrix_size = len(matrix)
     

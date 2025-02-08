@@ -62,30 +62,32 @@ Time Complexity: O(N^2), where N is the number of rows/columns in the matrix.
 Space Complexity: O(1), as the rotations are done in-place.
 
 ```python
-def rotate(matrix):
-    n = len(matrix)
+```python
+def rotate_matrix_90_degrees(matrix: list) -> None:
+    matrix_size = len(matrix)
     
-    # Rotate layer by layer
-    for layer in range(n // 2):
-        first = layer
-        last = n - 1 - layer
-        for i in range(first, last):
-            offset = i - first
+    # Rotate layer by layer from outer to inner
+    for current_layer in range(matrix_size // 2):
+        layer_start = current_layer
+        layer_end = matrix_size - 1 - current_layer
+        
+        for element_idx in range(layer_start, layer_end):
+            position_offset = element_idx - layer_start
             
-            # Save the top element
-            top = matrix[first][i]
+            # Store the top element before overwriting
+            temp_top = matrix[layer_start][element_idx]
             
-            # Left -> Top
-            matrix[first][i] = matrix[last - offset][first]
+            # Move left element to top
+            matrix[layer_start][element_idx] = matrix[layer_end - position_offset][layer_start]
             
-            # Bottom -> Left
-            matrix[last - offset][first] = matrix[last][last - offset]
+            # Move bottom element to left
+            matrix[layer_end - position_offset][layer_start] = matrix[layer_end][layer_end - position_offset]
             
-            # Right -> Bottom
-            matrix[last][last - offset] = matrix[i][last]
+            # Move right element to bottom
+            matrix[layer_end][layer_end - position_offset] = matrix[element_idx][layer_end]
             
-            # Top -> Right
-            matrix[i][last] = top
+            # Move stored top element to right
+            matrix[element_idx][layer_end] = temp_top
 
 # Example usage:
 # matrix = [
